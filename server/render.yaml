@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: sentinel-gateway
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: GATEWAY_PORT
+        value: 4000
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB
+        value: fraud_detection
+      - key: ENGINE_URL
+        sync: false

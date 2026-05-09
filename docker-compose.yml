@@ -1,0 +1,34 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  engine:
+    build: ./engine
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./engine/data:/app/data
+      - ./engine/models:/app/models
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - engine
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: fraud_detection
+      ENGINE_URL: http://engine:8000
+      GATEWAY_PORT: "4000"
+    ports:
+      - "4000:4000"
+
+volumes:
+  mongo_data:

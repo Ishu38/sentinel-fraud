@@ -1,0 +1,9 @@
+{
+  "model_version": "xgb-20260509-124605",
+  "auc": 0.9643427174790072,
+  "average_precision": 0.791548437807252,
+  "threshold": 0.7,
+  "n_features": 439,
+  "trained_at": "2026-05-09T12:46:05Z",
+  "threshold_basis": "F1-max on 88,581-row holdout (precision 0.7190, recall 0.7383)"
+}

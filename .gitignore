@@ -1,0 +1,14 @@
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.local
+engine/data/*.csv
+engine/data/*.zip
+client/dist/
+.DS_Store
+.vercel
+.vscode/
+*.log
+/tmp/
