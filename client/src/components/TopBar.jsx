@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api } from '../lib/api.js';
+import { api, DEMO_MODE } from '../lib/api.js';
 
 function useClock() {
   const [now, setNow] = useState(() => new Date());
@@ -41,15 +41,18 @@ export default function TopBar({ refreshKey }) {
       </div>
 
       <div className="topbar-meta">
-        <div className="meta-cell"><span className="k">ENGINE</span><span className="v">{live ? 'XGBoost · IEEE-CIS' : '—'}</span></div>
+        <div className="meta-cell"><span className="k">ENGINE</span><span className="v">{DEMO_MODE ? 'Heuristic · synthetic data' : live ? 'XGBoost · IEEE-CIS' : '—'}</span></div>
         <div className="meta-cell"><span className="k">LATENCY</span><span className="v">{latency != null ? `${latency} ms` : '—'}</span></div>
         <div className="meta-cell"><span className="k">UTC</span><span className="v">{utc}</span></div>
       </div>
 
-      <span className={`live ${live ? '' : 'offline'}`}>
-        <span className="dot" />
-        {live ? 'Online' : 'Offline'}
-      </span>
+      <div className="topbar-status">
+        {DEMO_MODE && <span className="demo-pill">DEMO</span>}
+        <span className={`live ${live ? '' : 'offline'}`}>
+          <span className="dot" />
+          {live ? 'Online' : 'Offline'}
+        </span>
+      </div>
     </header>
   );
 }
