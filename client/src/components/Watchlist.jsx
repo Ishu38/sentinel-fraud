@@ -10,7 +10,7 @@ export default function Watchlist({ refreshKey, onChange }) {
   useEffect(() => {
     let cancelled = false;
     api.listEntities()
-      .then((d) => !cancelled && setData(d))
+      .then((d) => !cancelled && setData({ items: d?.items ?? [], counts: d?.counts ?? {} }))
       .catch((e) => !cancelled && setError(e.message));
     return () => { cancelled = true; };
   }, [refreshKey]);

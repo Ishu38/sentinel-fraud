@@ -2,6 +2,13 @@ const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 const u = (path) => `${API_BASE}${path}`;
 
 async function jsonOrThrow(res) {
+  const ct = res.headers.get('content-type') ?? '';
+  if (!ct.includes('application/json')) {
+    const body = await res.text().catch(() => '');
+    throw new Error(
+      `expected JSON, got ${ct || 'unknown'} (${res.status}). Backend likely not deployed.${body.slice(0, 80) ? ' · ' + body.slice(0, 80) : ''}`,
+    );
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error ?? `request failed (${res.status})`);
   return data;
@@ -47,9 +54,25 @@ export const api = {
 };
 
 export function subscribeStream({ onTransaction, onEvent, onError }) {
-  const es = new EventSource(u('/api/stream'));
+  let es;
+  let closed = false;
+  let failureCount = 0;
+  try {
+    es = new EventSource(u('/api/stream'));
+  } catch {
+    return () => {};
+  }
   if (onTransaction) es.addEventListener('transaction', (e) => onTransaction(JSON.parse(e.data)));
   if (onEvent) es.addEventListener('event', (e) => onEvent(JSON.parse(e.data)));
-  if (onError) es.onerror = onError;
-  return () => es.close();
+  es.onerror = (err) => {
+    failureCount += 1;
+    if (failureCount >= 2) {
+      es.close();
+      closed = true;
+    }
+    onError?.(err);
+  };
+  return () => {
+    if (!closed) es.close();
+  };
 }
